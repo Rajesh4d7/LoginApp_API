@@ -6,11 +6,11 @@ const schema = new Schema({
     hash: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    ipAddress:{ type: String },
     role:{ type: String, required: true },
     createdDate: { type: Date, default: Date.now },
-    logInTime: { type: Date },
-    logoutTime: { type: String}
+    ipAddress: { type: String },
+    loginTime: { type: Date },
+    logoutTime: { type: Date}
 });
 
 schema.set('toJSON', { virtuals: true });

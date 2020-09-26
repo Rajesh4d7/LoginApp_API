@@ -11,17 +11,17 @@ module.exports = {
     create,
     update,
     logoutUser,
-    delete: _delete
+    delete: _delete,
+    audit
 };
 
-async function authenticate({ username, password , ipAddress}) {
+async function authenticate({ username, password , ip}) {
     const user = await User.findOne({ username });
     if (user && bcrypt.compareSync(password, user.hash)) {
-        //user.update({},{$set:{ipAddress:ipAddress}});
-        user.ipAddress = ipAddress;
-        user.logInTime = Date.now();
+        user.ipAddress = ip;
+        user.loginTime = Date.now();
         user.save();
-        const { hash, ...userWithoutHash } = user.toObject();
+        const { hash,ipAddress,logoutTime,...userWithoutHash } = user.toObject();
         const token = jwt.sign({ sub: user.id }, config.secret);
         return {
             ...userWithoutHash,
@@ -90,11 +90,10 @@ async function _delete(id) {
 }
 
 async function audit(id){
-    const auditUser = await User.findOne({ id });
-    if(auditUser.role != "Audit"){
+    const auditUser = await User.findById(id);
+    if(auditUser.role != "Auditor"){
         throw new Error (user.username+" don't have privilege to access");
     }
-    const users = await User.find({});
+    const users = await User.aggregate([{$project:{_id:1, username:1, role:1, loginTime:1, logoutTime:1 }}]);
     return users;
-
 }

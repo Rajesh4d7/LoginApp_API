@@ -22,14 +22,14 @@ function authenticate(req, res, next) {
 }
 
 function logout(req, res, next) {
-    userService.logoutUser(req.body.username)
+    userService.logoutUser(req.body)
         .then(user =>  res.status(200).json({ message: user.username+' Logged out successfully' }))
         .catch(err => next(err));
 }
 
 function register(req, res, next) {
     userService.create(req.body)
-        .then(() => res.json({}))
+        .then(() => res.status(200).json({}))
         .catch(err => next(err));
 }
 
@@ -65,6 +65,6 @@ function _delete(req, res, next) {
 
 function audit(req, res, next) {
     userService.audit(req.params.id)
-        .then(user => user ? res.json(user) : res.status(400).json({ message: 'no users available' }))
+        .then(user => user ? res.json(user) : res.status(401).json({ message: 'no users available' }))
         .catch(err => next(err));
 }
